@@ -1,12 +1,25 @@
-PREFIX ?= /usr/local
+include config.mk
+
+all: clean install
 
 output: dwmblocks.c blocks.h
-	cc `pkg-config --cflags x11` `pkg-config --libs x11` dwmblocks.c -o dwmblocks
+	${CC} ${CFLAGS} ${LDFLAGS} dwmblocks.c -o dwmblocks
+	chmod 755 dwmblocks
+
 clean:
-	rm -f *.o *.gch dwmblocks
-install: output
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	cp -f dwmblocks $(DESTDIR)$(PREFIX)/bin
-	chmod 755 $(DESTDIR)$(PREFIX)/bin/dwmblocks
+	rm -rf *.o *.gch dwmblocks bin/
+
+scripts:
+	mkdir -p bin/scripts
+	$(foreach script,$(wildcard scripts/*.sh),cp -f ${script} bin/${script:src/%.sh=%};)
+	chmod 755 bin/*
+
+install: output scripts
+	mkdir -p $(DESTDIR)${PREFIX}/bin/dwmblocks-scripts
+	cp -f dwmblocks $(DESTDIR)${PREFIX}/bin
+	cp -f bin/scripts/* $(DESTDIR)${PREFIX}/bin/dwmblocks-scripts
+
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/dwmblocks
+
+.PHONY: all clean scripts install uninstall
