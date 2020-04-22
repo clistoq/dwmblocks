@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 2
 #include<stdlib.h>
 #include<stdio.h>
 #include<string.h>
@@ -5,7 +6,7 @@
 #include<signal.h>
 #include<X11/Xlib.h>
 #define LENGTH(X)               (sizeof(X) / sizeof (X[0]))
-#define CMDLENGTH		50
+#define CMDLENGTH		100
 
 typedef struct {
 	char* icon;
@@ -14,6 +15,7 @@ typedef struct {
 	unsigned int signal;
 } Block;
 void sighandler(int num);
+void replace(char *str, char old, char new);
 void getcmds(int time);
 #ifndef __OpenBSD__
 void getsigcmds(int signal);
@@ -36,6 +38,14 @@ static char statusstr[2][256];
 static int statusContinue = 1;
 static void (*writestatus) () = setroot;
 
+void replace(char *str, char old, char new)
+{
+	int N = strlen(str);
+	for(int i = 0; i < N; i++)
+		if(str[i] == old)
+			str[i] = new;
+}
+
 //opens process *cmd and stores output in *output
 void getcmd(const Block *block, char *output)
 {
@@ -44,13 +54,9 @@ void getcmd(const Block *block, char *output)
 	FILE *cmdf = popen(cmd,"r");
 	if (!cmdf)
 		return;
-	char c;
 	int i = strlen(block->icon);
 	fgets(output+i, CMDLENGTH-i, cmdf);
-	i = strlen(output);
-	if (delim != '\0' && --i)
-		output[i++] = delim;
-	output[i++] = '\0';
+	if (delim) strcat(output, delim);
 	pclose(cmdf);
 }
 
@@ -94,7 +100,7 @@ int getstatus(char *str, char *last)
 	str[0] = '\0';
 	for(int i = 0; i < LENGTH(blocks); i++)
 		strcat(str, statusbar[i]);
-	str[strlen(str)-1] = '\0';
+	str[strlen(str) - strlen(delim)] = '\0';
 	return strcmp(str, last);//0 if they are the same
 }
 
@@ -156,7 +162,7 @@ int main(int argc, char** argv)
 	for(int i = 0; i < argc; i++)
 	{	
 		if (!strcmp("-d",argv[i]))
-			delim = argv[++i][0];
+			delim = argv[++i];
 		else if(!strcmp("-p",argv[i]))
 			writestatus = pstdout;
 	}

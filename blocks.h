@@ -1,20 +1,14 @@
-//Modify this file to change what commands output to your statusbar, and recompile using the make command.
 static const Block blocks[] = {
-	/*Icon*/	/*Command*/		/*Update Interval*/	/*Update Signal*/
-	{"", "cat ~/.pacupdate | sed /📦0/d",					0,		9},
-	
-	{"🧠", "free -h | awk '/^Mem/ { print $3\"/\"$2 }' | sed s/i//g",	30,		0},
-
-	{"", "~/bin/statusbar/volume",						0,		10},
-
-	{"☀", "xbacklight | sed 's/\\..*//'",					0,		11},
-	
-	{"", "~/bin/statusbar/battery",						5,		0},
-
-	{"🌡", "sensors | awk '/^temp1:/{print $2}'",				5,		0},
-
-	{"", "~/bin/statusbar/clock",						5,		0},
+    /* Icon         Command                    Interval    Signal */
+//    { "\uF001 ",    "/opt/dwmblocks/music",    5,          0      },
+//  { "\uF0E0 ",  "/opt/dwmblocks/email",    5,          0      },
+//  { "\uF187 ",   "/opt/dwmblocks/updates",  600,        0      },
+    { "\uE266 ",    "/opt/dwmblocks/cpu",      15,         0      },
+    { "\uF1C0 ",    "/opt/dwmblocks/memory",   15,         0      },
+    { "\uF028 ",    "/opt/dwmblocks/volume",   5,          0      },
+    { "\uF80B ",    "/opt/dwmblocks/keyboard", 5,          0      },
+//  { "\uF241 ",    "/opt/dwmblocks/battery",  30,         0      },
+    { "\uF017 ",    "/opt/dwmblocks/clock",    1,          0      },
 };
 
-//sets delimeter between status commands. NULL character ('\0') means no delimeter.
-static char delim = '|';
+static char *delim = " \uF053 ";
