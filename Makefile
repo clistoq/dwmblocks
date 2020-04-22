@@ -1,25 +1,34 @@
 include config.mk
 
-all: clean install
+SRC = dwmblocks.c
+OBJ = ${SRC:.c=.o}
 
-output: dwmblocks.c blocks.h
-	${CC} ${CFLAGS} ${LDFLAGS} dwmblocks.c -o dwmblocks
-	chmod 755 dwmblocks
+all: install clean
+
+.c.o:
+	${CC} -c ${CFLAGS} $< -o ${<:.c=.o}
+
+${OBJ}: blocks.h config.mk
+
+dwmblocks: ${OBJ}
+	mkdir -p bin
+	${CC} -o bin/$@ dwmblocks.o ${LDFLAGS} 
+	chmod 755 bin/dwmblocks
 
 clean:
 	rm -rf *.o *.gch dwmblocks bin/
 
 scripts:
 	mkdir -p bin/scripts
-	$(foreach script,$(wildcard scripts/*.sh),cp -f ${script} bin/${script:src/%.sh=%};)
-	chmod 755 bin/*
+	$(foreach script,$(wildcard scripts/*.sh),cp -f ${script} bin/$(basename ${script:src/%.sh=%});)
+	chmod 755 bin/scripts/*
 
-install: output scripts
-	mkdir -p $(DESTDIR)${PREFIX}/bin/dwmblocks-scripts
-	cp -f dwmblocks $(DESTDIR)${PREFIX}/bin
-	cp -f bin/scripts/* $(DESTDIR)${PREFIX}/bin/dwmblocks-scripts
+install: dwmblocks scripts
+	mkdir -p ${DESTDIR}${PREFIX}/bin ${DESTDIR}${SCRIPTPREFIX}/dwmblocks
+	cp -fp bin/dwmblocks $(DESTDIR)${PREFIX}/bin
+	cp -fp bin/scripts/* $(DESTDIR)${SCRIPTPREFIX}/dwmblocks/
 
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/dwmblocks
+	rm -rf $(DESTDIR)$(PREFIX)/bin/dwmblocks $(DESTDIR)${SCRIPTPREFIX}/dwmblocks
 
 .PHONY: all clean scripts install uninstall
