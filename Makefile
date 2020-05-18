@@ -20,7 +20,7 @@ clean:
 
 scripts:
 	mkdir -p bin/scripts
-	$(foreach script,$(wildcard scripts/*.sh),cp -f ${script} bin/$(basename ${script:src/%.sh=%});)
+	cp -fp bash-utility-scripts/wm-scripts/* bin/scripts
 	chmod 755 bin/scripts/*
 
 install: dwmblocks scripts
