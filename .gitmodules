@@ -1,3 +1,4 @@
 [submodule "bash-utility-scripts"]
 	path = bash-utility-scripts
 	url = git@github.com:clistoq/bash-utility-scripts.git
+  branch = master
